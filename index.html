@@ -1,669 +1,384 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World — Unleashed</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World — Neo Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050508;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
 
-  <!-- AOS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&family=DM+Mono:ital@0;1&display=swap" rel="stylesheet" />
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
-  <style>
-    :root {
-      --bg: #060608;
-      --bg2: #0d0d14;
-      --accent: #c8ff57;
-      --accent2: #ff4df7;
-      --accent3: #4dfffa;
-      --white: #f0f0f0;
-      --muted: #555570;
-      --card-bg: #11111c;
-      --border: rgba(200,255,87,0.15);
-    }
+        h1,
+        h2,
+        h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
 
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        /* Moving Blobs Background */
+        .blob-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            filter: blur(80px);
+            opacity: 0.6;
+        }
 
-    html { scroll-behavior: smooth; }
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            animation: move 20s infinite alternate;
+        }
 
-    body {
-      background: var(--bg);
-      color: var(--white);
-      font-family: 'Syne', sans-serif;
-      overflow-x: hidden;
-      cursor: none;
-    }
+        .blob-1 {
+            top: -10%;
+            left: -10%;
+            animation-duration: 25s;
+        }
 
-    /* ── Custom cursor ── */
-    #cursor {
-      position: fixed; top:0; left:0; z-index:9999;
-      width:12px; height:12px;
-      background: var(--accent);
-      border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%,-50%);
-      transition: width .25s, height .25s, background .25s;
-      mix-blend-mode: difference;
-    }
-    #cursor-ring {
-      position: fixed; top:0; left:0; z-index:9998;
-      width:40px; height:40px;
-      border: 1.5px solid var(--accent);
-      border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%,-50%);
-      transition: transform .08s, width .25s, height .25s, border-color .25s;
-    }
-    body:has(a:hover) #cursor { width:20px; height:20px; background: var(--accent2); }
-    body:has(a:hover) #cursor-ring { width:60px; height:60px; border-color: var(--accent2); }
+        .blob-2 {
+            bottom: -10%;
+            right: -10%;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            animation-duration: 30s;
+        }
 
-    /* ── Noise overlay ── */
-    body::before {
-      content:''; position:fixed; inset:0; z-index:0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events:none; opacity:.5;
-    }
+        .blob-3 {
+            top: 40%;
+            left: 30%;
+            width: 300px;
+            height: 300px;
+            background: #06b6d4;
+            animation-duration: 20s;
+        }
 
-    /* ── HERO ── */
-    .hero {
-      position: relative;
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      justify-content: center; align-items: center;
-      text-align: center;
-      padding: 2rem;
-      overflow: hidden;
-    }
+        @keyframes move {
+            from {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
 
-    .hero-grid {
-      position: absolute; inset:0;
-      background-image:
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 40%, transparent 100%);
-    }
+            to {
+                transform: translate(100px, 100px) scale(1.2) rotate(90deg);
+            }
+        }
 
-    .hero-glow {
-      position: absolute; top:40%; left:50%;
-      transform: translate(-50%,-50%);
-      width:700px; height:700px;
-      background: radial-gradient(circle, rgba(200,255,87,0.08) 0%, transparent 70%);
-      pointer-events:none;
-      animation: pulseGlow 4s ease-in-out infinite;
-    }
-    @keyframes pulseGlow {
-      0%,100% { opacity:.6; transform: translate(-50%,-50%) scale(1); }
-      50%      { opacity:1;  transform: translate(-50%,-50%) scale(1.1); }
-    }
+        /* Glassmorphism Classes */
+        .glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+        }
 
-    .hero-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: .75rem; letter-spacing:.2em;
-      color: var(--accent);
-      border: 1px solid var(--border);
-      padding: .4rem 1.2rem;
-      border-radius:999px;
-      margin-bottom: 2rem;
-      position: relative; z-index:1;
-      animation: fadeUp .8s ease both;
-    }
+        .nav-glass {
+            background: rgba(5, 5, 8, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--card-border);
+        }
 
-    .hero-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(5rem, 18vw, 16rem);
-      line-height: .9;
-      letter-spacing: -.02em;
-      position: relative; z-index:1;
-      animation: fadeUp .9s .1s ease both;
-    }
-    .hero-title span.h { color: var(--accent); display:inline-block; }
-    .hero-title span.w { color: var(--accent2); display:inline-block; }
+        /* Custom Hover Effect */
+        .hover-card {
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
 
-    .hero-sub {
-      font-size: clamp(1rem, 2.5vw, 1.4rem);
-      color: var(--muted);
-      margin-top: 1.5rem;
-      max-width: 500px;
-      line-height:1.6;
-      position: relative; z-index:1;
-      animation: fadeUp 1s .2s ease both;
-    }
+        .hover-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
 
-    .hero-btn {
-      display: inline-flex; align-items:center; gap:.6rem;
-      margin-top: 2.5rem;
-      padding: .85rem 2.2rem;
-      background: var(--accent);
-      color: #000;
-      font-family: 'Syne', sans-serif;
-      font-weight:700; font-size:.95rem;
-      border-radius:999px;
-      text-decoration:none;
-      position: relative; z-index:1;
-      animation: fadeUp 1s .35s ease both;
-      transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s;
-      box-shadow: 0 0 0 0 rgba(200,255,87,0);
-    }
-    .hero-btn:hover {
-      transform: scale(1.06) translateY(-3px);
-      box-shadow: 0 8px 40px rgba(200,255,87,.4), 0 0 80px rgba(200,255,87,.15);
-    }
-    .hero-btn svg { transition: transform .25s; }
-    .hero-btn:hover svg { transform: translateX(4px); }
+        /* Glowing Button */
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
 
-    .hero-scroll {
-      position: absolute; bottom: 2.5rem; left:50%; transform:translateX(-50%);
-      display: flex; flex-direction:column; align-items:center; gap:.5rem;
-      font-family:'DM Mono', monospace; font-size:.65rem; letter-spacing:.2em;
-      color: var(--muted); z-index:1;
-      animation: fadeUp 1.2s .6s ease both;
-    }
-    .scroll-line {
-      width:1px; height:60px;
-      background: linear-gradient(to bottom, var(--accent), transparent);
-      animation: scrollPulse 2s ease-in-out infinite;
-    }
-    @keyframes scrollPulse {
-      0%,100% { opacity:.3; transform: scaleY(1); }
-      50%      { opacity:1;  transform: scaleY(1.2); }
-    }
+        .btn-glow:hover {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+            transform: scale(1.02);
+        }
 
-    @keyframes fadeUp {
-      from { opacity:0; transform: translateY(30px); }
-      to   { opacity:1; transform: translateY(0); }
-    }
+        /* Bento Grid */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 200px);
+            gap: 20px;
+        }
 
-    /* ── SECTION wrapper ── */
-    section { position: relative; z-index:1; }
+        @media (max-width: 1024px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: auto;
+            }
+        }
 
-    /* ── MARQUEE ── */
-    .marquee-wrap {
-      background: var(--accent);
-      padding: 1rem 0;
-      overflow: hidden;
-      display:flex;
-    }
-    .marquee-track {
-      display: flex; gap: 3rem;
-      animation: marquee 18s linear infinite;
-      white-space:nowrap;
-    }
-    .marquee-item {
-      font-family:'Bebas Neue', sans-serif;
-      font-size: 1.4rem;
-      color: #000;
-      letter-spacing:.05em;
-      display:flex; align-items:center; gap:1rem;
-    }
-    .marquee-dot { width:8px; height:8px; background:#000; border-radius:50%; }
-    @keyframes marquee {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
+        @media (max-width: 640px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+        }
 
-    /* ── CARDS ── */
-    .cards-section {
-      padding: 8rem 2rem;
-      max-width: 1200px; margin: auto;
-    }
-    .section-label {
-      font-family:'DM Mono', monospace;
-      font-size: .75rem; letter-spacing:.25em;
-      color: var(--accent); margin-bottom:1rem;
-    }
-    .section-title {
-      font-family:'Bebas Neue', sans-serif;
-      font-size: clamp(2.5rem, 6vw, 5rem);
-      line-height:1;
-    }
+        .scroll-indicator {
+            width: 1px;
+            height: 80px;
+            background: linear-gradient(to bottom, var(--accent-primary), transparent);
+            position: relative;
+            overflow: hidden;
+        }
 
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-top: 4rem;
-    }
+        .scroll-indicator::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            animation: scrollLine 2s infinite;
+        }
 
-    .card {
-      background: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 1.25rem;
-      padding: 2rem;
-      position: relative;
-      overflow: hidden;
-      transition: transform .35s cubic-bezier(.34,1.56,.64,1), border-color .35s, box-shadow .35s;
-      cursor: pointer;
-    }
-    .card::before {
-      content:'';
-      position:absolute; inset:0;
-      background: radial-gradient(circle at var(--mx,50%) var(--my,50%),
-        rgba(200,255,87,0.07) 0%, transparent 60%);
-      opacity:0; transition: opacity .4s;
-    }
-    .card:hover::before { opacity:1; }
-    .card:hover {
-      transform: translateY(-8px) scale(1.01);
-      border-color: rgba(200,255,87,.3);
-      box-shadow: 0 30px 60px rgba(0,0,0,.6), 0 0 40px rgba(200,255,87,.08);
-    }
+        @keyframes scrollLine {
+            0% {
+                transform: translateY(-100%);
+            }
 
-    .card-icon {
-      font-size: 2.5rem; margin-bottom:1.5rem;
-      display: inline-flex;
-      width:60px; height:60px; align-items:center; justify-content:center;
-      border-radius:.75rem;
-      transition: transform .3s cubic-bezier(.34,1.56,.64,1);
-    }
-    .card:hover .card-icon { transform: scale(1.15) rotate(-5deg); }
-
-    .card-title {
-      font-size: 1.3rem; font-weight:700;
-      margin-bottom: .6rem;
-    }
-    .card-desc {
-      font-size: .9rem; color: var(--muted); line-height:1.6;
-    }
-    .card-arrow {
-      position: absolute; bottom:1.5rem; right:1.5rem;
-      width:36px; height:36px;
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius:50%;
-      display:flex; align-items:center; justify-content:center;
-      color: var(--muted);
-      transition: background .3s, border-color .3s, color .3s, transform .3s cubic-bezier(.34,1.56,.64,1);
-    }
-    .card:hover .card-arrow {
-      background: var(--accent); border-color:var(--accent);
-      color:#000; transform: rotate(-45deg);
-    }
-
-    /* ── BIG FEATURE ── */
-    .feature-section {
-      padding: 6rem 2rem;
-      background: var(--bg2);
-      border-top: 1px solid rgba(255,255,255,.04);
-      border-bottom: 1px solid rgba(255,255,255,.04);
-    }
-    .feature-inner {
-      max-width:1200px; margin:auto;
-      display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center;
-    }
-    @media(max-width:768px) { .feature-inner { grid-template-columns:1fr; } }
-
-    .feature-visual {
-      position:relative; aspect-ratio:1;
-      max-width:480px;
-      border-radius:1.5rem; overflow:hidden;
-      background: linear-gradient(135deg, #0f0f1a 0%, #1a0a1f 100%);
-      border: 1px solid rgba(255,255,255,.06);
-    }
-    .feature-orb {
-      position:absolute; border-radius:50%;
-      filter: blur(60px);
-      animation: float 6s ease-in-out infinite;
-    }
-    .orb1 { width:250px; height:250px; background:rgba(200,255,87,.18); top:-50px; left:-50px; animation-delay:0s; }
-    .orb2 { width:200px; height:200px; background:rgba(255,77,247,.15); bottom:-30px; right:-30px; animation-delay:2s; }
-    .orb3 { width:150px; height:150px; background:rgba(77,255,250,.12); top:50%; left:50%; transform:translate(-50%,-50%); animation-delay:4s; }
-    @keyframes float {
-      0%,100% { transform: translate(0,0) scale(1); }
-      50%      { transform: translate(10px, -15px) scale(1.05); }
-    }
-    .feature-code {
-      position:absolute; inset:2rem;
-      background:rgba(0,0,0,.6);
-      backdrop-filter: blur(10px);
-      border-radius:1rem;
-      border:1px solid rgba(255,255,255,.1);
-      padding:1.5rem;
-      font-family:'DM Mono', monospace;
-      font-size:.8rem; line-height:1.8;
-    }
-    .code-line { display:flex; gap:.75rem; }
-    .ln { color: var(--muted); user-select:none; min-width:1.5ch; }
-    .kw { color: var(--accent); }
-    .fn { color: var(--accent2); }
-    .str { color: var(--accent3); }
-    .cm { color: #444; }
-
-    .feature-content {}
-    .feature-content .section-title { margin-bottom:1.5rem; }
-    .feature-content p { color:var(--muted); line-height:1.8; margin-bottom:1.5rem; }
-
-    .badge-row { display:flex; flex-wrap:wrap; gap:.75rem; margin-top:2rem; }
-    .badge {
-      padding:.4rem 1rem; border-radius:999px;
-      font-family:'DM Mono',monospace; font-size:.75rem;
-      border:1px solid; transition: transform .25s, box-shadow .25s;
-    }
-    .badge:hover { transform:translateY(-3px) scale(1.05); }
-    .b1 { color:var(--accent);  border-color:rgba(200,255,87,.3); }
-    .b2 { color:var(--accent2); border-color:rgba(255,77,247,.3); }
-    .b3 { color:var(--accent3); border-color:rgba(77,255,250,.3); }
-
-    /* ── STATS ── */
-    .stats-section {
-      padding: 6rem 2rem;
-      max-width:1200px; margin:auto;
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
-      gap:2rem;
-    }
-    .stat-item {
-      text-align:center; padding:2rem;
-      border:1px solid rgba(255,255,255,.05);
-      border-radius:1rem;
-      transition: transform .35s cubic-bezier(.34,1.56,.64,1), border-color .3s, box-shadow .3s;
-    }
-    .stat-item:hover {
-      transform: translateY(-6px) scale(1.03);
-      border-color: rgba(200,255,87,.25);
-      box-shadow: 0 20px 40px rgba(0,0,0,.5), 0 0 30px rgba(200,255,87,.06);
-    }
-    .stat-num {
-      font-family:'Bebas Neue', sans-serif;
-      font-size: 4rem; line-height:1;
-      background: linear-gradient(135deg, var(--accent), var(--accent3));
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    }
-    .stat-label { color:var(--muted); font-size:.85rem; margin-top:.5rem; letter-spacing:.1em; }
-
-    /* ── CTA ── */
-    .cta-section {
-      padding: 8rem 2rem;
-      text-align:center; position:relative; overflow:hidden;
-    }
-    .cta-bg {
-      position:absolute; inset:0;
-      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(200,255,87,.06) 0%, transparent 70%);
-    }
-    .cta-title {
-      font-family:'Bebas Neue', sans-serif;
-      font-size:clamp(3rem, 10vw, 9rem);
-      line-height:.9; position:relative; z-index:1;
-    }
-    .cta-title em {
-      font-style:normal;
-      -webkit-text-stroke:2px var(--accent);
-      color:transparent;
-    }
-    .cta-btns {
-      display:flex; flex-wrap:wrap; gap:1rem; justify-content:center;
-      margin-top:3rem; position:relative; z-index:1;
-    }
-    .btn-outline {
-      display:inline-flex; align-items:center; gap:.5rem;
-      padding:.85rem 2.2rem;
-      border:1px solid rgba(255,255,255,.2);
-      border-radius:999px;
-      text-decoration:none; color:var(--white);
-      font-family:'Syne',sans-serif; font-weight:600;
-      transition: border-color .25s, background .25s, transform .25s cubic-bezier(.34,1.56,.64,1);
-    }
-    .btn-outline:hover {
-      border-color:var(--accent); background:rgba(200,255,87,.08);
-      transform:translateY(-3px);
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid rgba(255,255,255,.05);
-      padding:3rem 2rem;
-      max-width:1200px; margin:auto;
-      display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem;
-    }
-    .footer-brand {
-      font-family:'Bebas Neue', sans-serif;
-      font-size:1.8rem; letter-spacing:.05em;
-      color:var(--white);
-    }
-    .footer-brand span { color:var(--accent); }
-    .footer-copy {
-      font-family:'DM Mono',monospace; font-size:.7rem;
-      color:var(--muted); letter-spacing:.1em;
-    }
-
-    /* ── Scroll indicator line ── */
-    #progress-bar {
-      position:fixed; top:0; left:0; height:3px; z-index:9990;
-      background: linear-gradient(to right, var(--accent), var(--accent2), var(--accent3));
-      width:0%; transition:width .05s linear;
-    }
-  </style>
+            100% {
+                transform: translateY(100%);
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-  <div id="cursor"></div>
-  <div id="cursor-ring"></div>
-  <div id="progress-bar"></div>
+    <div class="blob-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
 
-  <!-- ══ HERO ══ -->
-  <section class="hero">
-    <div class="hero-grid"></div>
-    <div class="hero-glow"></div>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 nav-glass">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="text-2xl font-extrabold tracking-tighter flex items-center gap-2">
+                <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center text-sm">H</div>
+                HELLO<span class="text-purple-500">.</span>W
+            </div>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+                <a href="#" class="hover:text-white transition-colors">Loyihalar</a>
+                <a href="#" class="hover:text-white transition-colors">Xizmatlar</a>
+                <a href="#" class="hover:text-white transition-colors">Biz haqimizda</a>
+                <a href="#"
+                    class="px-5 py-2.5 bg-white text-black rounded-full font-bold hover:bg-slate-200 transition-all">Bog'lanish</a>
+            </div>
+            <button class="md:hidden text-2xl">☰</button>
+        </div>
+    </nav>
 
-    <p class="hero-tag">✦ Est. 2025 · Coded with soul</p>
+    <!-- Hero Section -->
+    <section class="min-h-screen flex flex-col items-center justify-center pt-20 px-6 text-center">
+        <div
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs font-semibold tracking-widest uppercase text-purple-400 mb-8 border-purple-500/20">
+            <span class="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></span>
+            Kelajakni kodlaymiz
+        </div>
 
-    <h1 class="hero-title">
-      <span class="h">HELLO</span><br>
-      <span class="w">WORLD</span>
-    </h1>
+        <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter mb-6 leading-tight max-w-4xl">
+            Sizning <span
+                class="bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">G'oyangiz</span><br>Dunyoga
+            Salom Beradi.
+        </h1>
 
-    <p class="hero-sub">
-      Two words. Infinite possibilities. This is where every great project begins — 
-      and this one hits different.
-    </p>
+        <p class="text-lg md:text-xl text-slate-400 max-w-2xl mb-12 leading-relaxed">
+            Biz faqat kod yozmaymiz. Biz raqamli tajribalarni shakllantiramiz,
+            estetikani funksionallik bilan birlashtiramiz va mukammallikka intilamiz.
+        </p>
 
 
     <a href="/amirhon.html" class="hero-btn">
       Explore the magic
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M8 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
-
-    <div class="hero-scroll">
-      <div class="scroll-line"></div>
-      SCROLL
-    </div>
-  </section>
-
-  <!-- ══ MARQUEE ══ -->
-  <div class="marquee-wrap" aria-hidden="true">
-    <div class="marquee-track">
-      <!-- doubled for infinite feel -->
-      <span class="marquee-item"><span class="marquee-dot"></span> HELLO WORLD</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> HOVER ME</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> SCROLL DOWN</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> ANIMATIONS</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> SHADOWS</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> DESIGN</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> HELLO WORLD</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> HOVER ME</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> SCROLL DOWN</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> ANIMATIONS</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> SHADOWS</span>
-      <span class="marquee-item"><span class="marquee-dot"></span> DESIGN</span>
-    </div>
-  </div>
-
-  <!-- ══ CARDS ══ -->
-  <section class="cards-section" id="cards">
-    <p class="section-label" data-aos="fade-up">// FEATURES</p>
-    <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">
-      BUILT TO<br><span style="color:var(--accent)">IMPRESS.</span>
-    </h2>
-
-    <div class="cards-grid">
-      <div class="card" data-aos="fade-up" data-aos-delay="0">
-        <div class="card-icon" style="background:rgba(200,255,87,.1)">⚡</div>
-        <h3 class="card-title">Lightning Fast</h3>
-        <p class="card-desc">Zero bloat, pure performance. Every frame rendered at the speed of thought.</p>
-        <div class="card-arrow">→</div>
-      </div>
-      <div class="card" data-aos="fade-up" data-aos-delay="100">
-        <div class="card-icon" style="background:rgba(255,77,247,.1)">🎨</div>
-        <h3 class="card-title">Pixel Perfect</h3>
-        <p class="card-desc">Every detail obsessed over. Design that doesn't just look good — it feels right.</p>
-        <div class="card-arrow">→</div>
-      </div>
-      <div class="card" data-aos="fade-up" data-aos-delay="200">
-        <div class="card-icon" style="background:rgba(77,255,250,.1)">✦</div>
-        <h3 class="card-title">Magic Moments</h3>
-        <p class="card-desc">Micro-interactions that delight. Animations that breathe life into static pixels.</p>
-        <div class="card-arrow">→</div>
-      </div>
-      <div class="card" data-aos="fade-up" data-aos-delay="300">
-        <div class="card-icon" style="background:rgba(200,255,87,.1)">🌐</div>
-        <h3 class="card-title">Responsive</h3>
-        <p class="card-desc">Looks stunning on any screen, any device, any dimension.</p>
-        <div class="card-arrow">→</div>
-      </div>
-      <div class="card" data-aos="fade-up" data-aos-delay="400">
-        <div class="card-icon" style="background:rgba(255,77,247,.1)">🔮</div>
-        <h3 class="card-title">Future Proof</h3>
-        <p class="card-desc">Clean code, semantic HTML, modern CSS. Built to last forever.</p>
-        <div class="card-arrow">→</div>
-      </div>
-      <div class="card" data-aos="fade-up" data-aos-delay="500">
-        <div class="card-icon" style="background:rgba(77,255,250,.1)">💎</div>
-        <h3 class="card-title">Premium Feel</h3>
-        <p class="card-desc">Typography, rhythm, and spacing that communicate quality instantly.</p>
-        <div class="card-arrow">→</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══ FEATURE ══ -->
-  <section class="feature-section">
-    <div class="feature-inner">
-      <div class="feature-visual" data-aos="fade-right">
-        <div class="feature-orb orb1"></div>
-        <div class="feature-orb orb2"></div>
-        <div class="feature-orb orb3"></div>
-        <div class="feature-code">
-          <div class="code-line"><span class="ln">1</span><span class="cm">// hello world.js</span></div>
-          <div class="code-line"><span class="ln">2</span></div>
-          <div class="code-line"><span class="ln">3</span><span class="kw">const </span><span>greet</span><span> = (</span><span class="fn">name</span><span>) =&gt; {</span></div>
-          <div class="code-line"><span class="ln">4</span><span> &nbsp; return </span><span class="str">`Hello, ${name}!`</span><span>;</span></div>
-          <div class="code-line"><span class="ln">5</span><span>};</span></div>
-          <div class="code-line"><span class="ln">6</span></div>
-          <div class="code-line"><span class="ln">7</span><span class="fn">greet</span><span>(</span><span class="str">"World"</span><span>);</span></div>
-          <div class="code-line"><span class="ln">8</span></div>
-          <div class="code-line"><span class="ln">9</span><span class="cm">// → "Hello, World!" ✦</span></div>
+        <div class="flex flex-wrap items-center justify-center gap-4">
+            <a href="#explore"
+                class="btn-glow px-8 py-4 bg-purple-600 rounded-2xl font-bold text-lg flex items-center gap-3">
+                Ishni boshlash
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+            </a>
+            <a href="#" class="px-8 py-4 glass rounded-2xl font-bold text-lg hover:bg-white/5 transition-all">
+                Portfolio
+            </a>
         </div>
-      </div>
 
-      <div class="feature-content" data-aos="fade-left" data-aos-delay="150">
-        <p class="section-label">// THE VISION</p>
-        <h2 class="section-title">
-          SIMPLE IS<br><span style="color:var(--accent2)">POWERFUL.</span>
-        </h2>
-        <p>
-          Two words changed computing forever. "Hello World" is the first thing every developer writes — 
-          and we made it extraordinary.
-        </p>
-        <p>
-          Because if you're going to ship something to the world, it might as well look like you actually 
-          care about what you're building.
-        </p>
-        <div class="badge-row">
-          <span class="badge b1">AOS Scroll</span>
-          <span class="badge b2">Hover FX</span>
-          <span class="badge b3">Glassmorphism</span>
-          <span class="badge b1">CSS Animations</span>
-          <span class="badge b2">Custom Cursor</span>
-          <span class="badge b3">Infinite Marquee</span>
+
+        <div class="mt-24 flex flex-col items-center gap-4 opacity-50">
+            <span class="text-[10px] tracking-[0.3em] font-bold uppercase">Pastga varaqlang</span>
+            <div class="scroll-indicator"></div>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ══ STATS ══ -->
-  <div class="stats-section">
-    <div class="stat-item" data-aos="zoom-in" data-aos-delay="0">
-      <div class="stat-num">100%</div>
-      <div class="stat-label">PURE CSS</div>
-    </div>
-    <div class="stat-item" data-aos="zoom-in" data-aos-delay="100">
-      <div class="stat-num">0ms</div>
-      <div class="stat-label">LOAD TIME</div>
-    </div>
-    <div class="stat-item" data-aos="zoom-in" data-aos-delay="200">
-      <div class="stat-num">∞</div>
-      <div class="stat-label">SWAG LEVEL</div>
-    </div>
-    <div class="stat-item" data-aos="zoom-in" data-aos-delay="300">
-      <div class="stat-num">9.9</div>
-      <div class="stat-label">DESIGN SCORE</div>
-    </div>
-  </div>
+    <!-- Features Section (Bento Grid) -->
+    <section id="explore" class="max-w-7xl mx-auto px-6 py-32">
+        <div class="mb-16 text-center md:text-left">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-4">Nega aynan biz?</h2>
+            <p class="text-slate-400 max-w-xl">Bizning yondashuvimiz har bir loyihani san'at darajasiga ko'taradi.</p>
+        </div>
 
-  <!-- ══ CTA ══ -->
-  <section class="cta-section">
-    <div class="cta-bg"></div>
-    <h2 class="cta-title" data-aos="fade-up">
-      MAKE IT<br><em>YOURS</em>
-    </h2>
-    <div class="cta-btns">
-      <a href="#" class="hero-btn" data-aos="fade-up" data-aos-delay="100">
-        Get Started
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M8 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-      <a href="#" class="btn-outline" data-aos="fade-up" data-aos-delay="200">
-        View Source
-      </a>
-    </div>
-  </section>
+        <div class="bento-grid">
+            <!-- Large Card -->
+            <div class="glass p-8 col-span-2 row-span-2 flex flex-col justify-between hover-card">
+                <div>
+                    <div
+                        class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-400 mb-6">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-3xl font-bold mb-4">Xavfsiz va Ishonchli</h3>
+                    <p class="text-slate-400 text-lg leading-relaxed">
+                        Har bir loyiha eng yuqori darajadagi xavfsizlik protokollari asosida quriladi.
+                        Sizning ma'lumotlaringiz biz bilan himoyalangan.
+                    </p>
+                </div>
+                <div class="mt-8 pt-8 border-t border-white/5">
+                    <span class="text-blue-400 font-bold">100% Himoya kafolati</span>
+                </div>
+            </div>
 
-  <!-- ══ FOOTER ══ -->
-  <footer>
-    <div class="footer-brand">HELLO<span>.</span>WORLD</div>
-    <p class="footer-copy">© 2025 · BUILT WITH ✦ AND SLEEPLESS NIGHTS</p>
-  </footer>
+            <!-- Medium Card -->
+            <div class="glass p-8 col-span-2 flex flex-col justify-between hover-card">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Tezkorlik</h3>
+                        <p class="text-slate-400 text-sm">Vaqt — eng qimmatli resurs. Biz natijani kutishga majbur
+                            qilmaymiz.</p>
+                    </div>
+                    <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center text-purple-400">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
 
-  <!-- AOS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-  <script>
-    // AOS init
-    AOS.init({ duration: 700, easing: 'cubic-bezier(0.25,0.46,0.45,0.94)', once: true, offset: 80 });
+            <!-- Small Card 1 -->
+            <div class="glass p-8 flex flex-col justify-center items-center text-center hover-card">
+                <div class="text-4xl font-bold text-white mb-2">99%</div>
+                <div class="text-xs uppercase tracking-widest text-slate-500 font-bold">Uptime</div>
+            </div>
 
-    // Custom cursor
-    const cursor = document.getElementById('cursor');
-    const ring   = document.getElementById('cursor-ring');
-    let rx=0, ry=0, mx=0, my=0;
+            <!-- Small Card 2 -->
+            <div class="glass p-8 flex flex-col justify-center items-center text-center hover-card">
+                <div class="text-4xl font-bold text-white mb-2">24/7</div>
+                <div class="text-xs uppercase tracking-widest text-slate-500 font-bold">Yordam</div>
+            </div>
+        </div>
+    </section>
 
-    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+    <!-- Stats Section -->
+    <section class="bg-white/2 py-20 border-y border-white/5">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+            <div>
+                <div class="text-5xl font-black mb-2">250+</div>
+                <div class="text-slate-500 text-sm font-medium uppercase tracking-widest">Loyihalar</div>
+            </div>
+            <div>
+                <div class="text-5xl font-black mb-2">50k</div>
+                <div class="text-slate-500 text-sm font-medium uppercase tracking-widest">Foydalanuvchilar</div>
+            </div>
+            <div>
+                <div class="text-5xl font-black mb-2">15+</div>
+                <div class="text-slate-500 text-sm font-medium uppercase tracking-widest">Mukofotlar</div>
+            </div>
+            <div>
+                <div class="text-5xl font-black mb-2">100%</div>
+                <div class="text-slate-500 text-sm font-medium uppercase tracking-widest">Natija</div>
+            </div>
+        </div>
+    </section>
 
-    function animateCursor() {
-      rx += (mx - rx) * 0.12;
-      ry += (my - ry) * 0.12;
-      cursor.style.left = mx + 'px';
-      cursor.style.top  = my + 'px';
-      ring.style.left   = rx + 'px';
-      ring.style.top    = ry + 'px';
-      requestAnimationFrame(animateCursor);
-    }
-    animateCursor();
+    <!-- Footer -->
+    <footer class="py-20 px-6 border-t border-white/5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
+            <div class="text-center md:text-left">
+                <div class="text-2xl font-extrabold tracking-tighter mb-4">HELLO.W</div>
+                <p class="text-slate-500 text-sm max-w-xs">
+                    Raqamli olamda o'z izini qoldirishni istaganlar uchun mukammal yechimlar.
+                </p>
+            </div>
+            <div class="flex gap-8 text-sm font-medium text-slate-400">
+                <a href="#" class="hover:text-white transition-colors">Telegram</a>
+                <a href="#" class="hover:text-white transition-colors">Instagram</a>
+                <a href="#" class="hover:text-white transition-colors">LinkedIn</a>
+            </div>
+            <div class="text-slate-600 text-[10px] uppercase font-bold tracking-widest">
+                © 2026 NEO HELLO WORLD. ALL RIGHTS RESERVED.
+            </div>
+        </div>
+    </footer>
 
-    // Scroll progress bar
-    const bar = document.getElementById('progress-bar');
-    window.addEventListener('scroll', () => {
-      const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
-      bar.style.width = pct + '%';
-    });
+    <script>
+        // Smooth scroll implementation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
 
-    // Card mouse glow tracking
-    document.querySelectorAll('.card').forEach(card => {
-      card.addEventListener('mousemove', e => {
-        const r = card.getBoundingClientRect();
-        const x = ((e.clientX - r.left) / r.width  * 100).toFixed(1);
-        const y = ((e.clientY - r.top)  / r.height * 100).toFixed(1);
-        card.style.setProperty('--mx', x + '%');
-        card.style.setProperty('--my', y + '%');
-      });
-    });
-  </script>
+        // Interactive blobs movement on mouse move
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            const blobs = document.querySelectorAll('.blob');
+            blobs.forEach((blob, index) => {
+                const speed = (index + 1) * 20;
+                const moveX = x * speed;
+                const moveY = y * speed;
+                blob.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            });
+        });
+    </script>
 </body>
+
 </html>
